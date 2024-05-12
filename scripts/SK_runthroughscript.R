@@ -446,6 +446,30 @@ step2 <- step1 %>%
 ########################
 # Episode 13 - Data Frame Manipulation with tidyr
 
+library(tidyr)
 
+str(gapminder)
+# Exercise, Challenge 1: Is gapminder a purely long, purely wide, or some intermediate format? 
+# Solution: intermediate; We have three ID variables (continent, country, year) and three observation variables (pop, lifeExp, gdpPercap)
 
+# Download the wide version (csv) of gapminder and save to you data folder
+# Load the data file and look at it 
+# SK: it says to use the stringsAsFactors = F argument but that's not necessary anymore after R 4.0; see: https://stackoverflow.com/questions/61950876/read-csv-doesnt-seem-to-detect-factors-in-r-4-0-0
+# SK: Why are they using read.csv and not read_csv? Probably to import as a data.frame rather than a tibble
 
+gap_wide <- read.csv("data/gapminder_wide.csv")
+str(gap_wide)
+View(gap_wide)
+
+# pivot_longer() reduces # of columns, increases # of rows
+# pivotlonger(data, cols = c("a1", "a2", "a3"), names_to = "key", values_to = "value")
+
+gap_long <- gap_wide %>% 
+  pivot_longer(cols = c(starts_with('pop'), starts_with('lifeExp'), starts_with('gdpPercap')), names_to = "obstype_year", values_to = "obs_values")
+
+str(gap_long)
+
+# Another way to do it
+gap_long2 <- gap_wide %>% 
+  pivot_longer(cols = c(-continent, -country), names_to = "obstype_year", values_to = "obs_values")
+str(gap_long2)
