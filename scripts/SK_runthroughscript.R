@@ -473,3 +473,68 @@ str(gap_long)
 gap_long2 <- gap_wide %>% 
   pivot_longer(cols = c(-continent, -country), names_to = "obstype_year", values_to = "obs_values")
 str(gap_long2)
+
+# The obstrype_year has two parts so we need to separate those
+# Note: we are overwriting the dataset
+gap_long <- gap_long %>% 
+  separate(obstype_year, into = c("obs_type", "year"), sep = "_")
+str(gap_long) #SK: see year is a character
+gap_long$year <- as.integer(gap_long$year)
+str(gap_long)
+
+# Exercise, Challenge 2: using gap_long, calculate mean life expectancy, pop, and gdpPercap for each continent; Hint: group_by and summarize
+gap_long %>% 
+  group_by(continent, obs_type) %>% 
+  summarize(means = mean(obs_values))
+
+# From long to intermediate format
+# Skip this section (and just cover from long to wide)
+
+# pivot long to intermediate format
+gap_normal <- gap_long %>% 
+  pivot_wider(names_from = obs_type, values_from = obs_values)
+dim(gap_normal)
+
+names(gap_normal)
+names(gapminder) #different ordering
+
+gap_normal <- gap_normal[, names(gapminder)]
+all.equal(gap_normal, gapminder)
+
+head(gap_normal)
+head(gapminder)
+
+gap_normal <- gap_normal %>% 
+  arrange(country, year)
+
+all.equal(gap_normal, gapminder)
+
+# Now Long to Wide - Note: these steps are repeating, can cut content
+gap_temp <- gap_long %>% 
+  unite(var_ID, continent, country, sep = "_")
+str(gap_temp)
+
+gap_temp <- gap_long %>% 
+  unite(ID_var, continent, country, sep = "_") %>% 
+  unite(var_names, obs_type, year, sep = "_")
+str(gap_temp)
+# Using unite, we now have a single ID variable which is a combination of continent and country and we have defined variable names. Now ready to pivot_wider
+
+gap_wide_new <- gap_long %>% 
+  unite(ID_var, continent, country, sep = "_") %>% 
+  unite(var_names, obs_type, year, sep = "_") %>% 
+  pivot_wider(names_from = var_names, values_from = obs_values)
+str(gap_wide_new)
+View(gap_wide_new)
+
+# Now separating the ID_var
+gap_wide_betterID <- separate(gap_wide_new, ID_var, c("continent", "country"), sep = "_")
+
+gap_wide_betterID <- gap_long %>% 
+  unite(ID_var, continent, country, sep = "_") %>% 
+  unite(var_names, obs_type, year, sep = "_") %>% 
+  pivot_wider(names_from = var_names, values_from = obs_values) %>% 
+  separate(ID_var, c("continent", "country"), sep = "_")
+str(gap_wide_betterID)
+dim(gap_wide_betterID)
+View(gap_wide_betterID)
