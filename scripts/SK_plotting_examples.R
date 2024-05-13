@@ -36,3 +36,5 @@ geom_histogram()
 geom_bar()
 geom_col()
 
+# adding a note
+
