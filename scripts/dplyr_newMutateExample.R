@@ -20,7 +20,7 @@ gapminder_with_ranks <- gapminder %>%
   filter(year == 1957) %>%
   mutate(pop_rank = rank(pop), 
          lifeExp_rank = rank(lifeExp)) %>%
-  arrange((lifeExp))
+  arrange(lifeExp_rank)
 
 nrow(gapminder_rank)
 gapminder_rank[71, ]
